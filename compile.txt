@@ -1,0 +1,3 @@
+g++ main.cpp board.cpp game.cpp display2d.cpp -std=c++14 ./SFML/include/ -c
+
+g++ main.o board.o game.o display2d.o  -o exec -L ./SFML/lib   -lsfml-graphics -lsfml-window -lsfml-system
