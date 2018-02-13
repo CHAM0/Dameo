@@ -20,7 +20,7 @@ void Game::play() {
         // Sauvegarde de l'etat actuel du jeux
         states_.push_back(getCurrentState());
 
-        playTurnCursor(colorWhite);
+        //playTurnCursor(colorWhite);
         // Tour du joueur 1
         playTurn(colorWhite);
         playTurn(colorBlack);
@@ -148,10 +148,10 @@ void Game::playTurnCursor(Color const & color) {
 void Game::launch() {
 
     // pions de test
-    //echiquier_->newPiece(colorBlack, Coordinate(4.0,3.0));
-    //echiquier_->newPiece(colorBlack, Coordinate(4.0,5.0));
-    //echiquier_->newPiece(colorBlack, Coordinate(3.0,2.0));
-    //echiquier_->newPiece(colorBlack, Coordinate(4.0,1.0));
+    echiquier_->newPiece(colorBlack, Coordinate(4.0,3.0));
+    echiquier_->newPiece(colorBlack, Coordinate(4.0,5.0));
+    echiquier_->newPiece(colorBlack, Coordinate(3.0,2.0));
+    echiquier_->newPiece(colorBlack, Coordinate(4.0,1.0));
 
     std::thread test(&Game::play,this);
     window_.render();

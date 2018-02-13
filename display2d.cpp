@@ -46,16 +46,8 @@ void Display2D::render() {
 
 void Display2D::displayBoard() {
     
-    int tableSize = size_ / scale_;
-    for (int i=0; i<size_; ++i) {
-        int offset = i%2;
-        for (int j=0; j<size_; ++j) {
-            sf::RectangleShape rect(sf::Vector2f(tableSize, tableSize));
-            if(j%2 == offset) rect.setFillColor(sf::Color::Black);
-            else rect.setFillColor(sf::Color::White);
-            rect.setPosition(i*tableSize,j*tableSize);
-            window_.draw(rect);
-        }
+    for (auto & c : square) {
+        window_.draw(c);
     }
 }
 
