@@ -36,5 +36,6 @@ class Game {
     // Verifie un mouvement
     bool checkMove(Move & move);
     void eatPiece(Coordinate & coord, std::vector<std::tuple<int, int>> & path, Color const & color);
+    std::vector<Move> getAvailableMoves(const Color & color);
 
 };

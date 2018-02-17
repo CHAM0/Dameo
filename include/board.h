@@ -54,7 +54,8 @@ class Board {
     void init(Color colorJ1, Color colorJ2);  
 
     // Deplace une piece 
-    void movePiece(Move * move); 
+    void movePiece(Move & move, const Color & color); 
+   // void movePiece(Move & move,const Color & color, std::vector<std::tuple<int, int>> & path);
 
     // Ejecte une piece de l'echiquier
     void ejectPiece(Coordinate const & coordonate); 

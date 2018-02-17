@@ -94,16 +94,25 @@ void Board::ejectPiece(Coordinate const & coord) {
     square->piece = new Piece(colorNone, coord.getX(), coord.getY());
 }
 
-void Board::movePiece(Move * move) {
-    //move->show();
-    auto squareStart = getSquare(move->start_);
-    auto squareFinish = getSquare(move->finish_);
-    squareStart->piece->moveTo(move->finish_);
-    ejectPiece(move->finish_);
-    squareFinish->piece = squareStart->piece,
-    squareStart->piece = new Piece(colorNone,squareStart->coordinate.getX(), squareStart->coordinate.getY());
-
+void Board::movePiece(Move & move, const Color & color) {
+    
+    ejectPiece(move.start_);
+    Coordinate check(std::get<0>(move.path_[0]),std::get<1>(move.path_[0]));
+    if (check == move.start_){
+        std::cout<<"Mangement"<<std::endl;
+        int x = static_cast<int>(move.start_.getX());
+        int y = static_cast<int>(move.start_.getY());
+        for (int i=1; i<move.path_.size(); i++) {
+            x += std::get<0>(move.path_[i]);
+            y += std::get<1>(move.path_[i]);
+            ejectPiece(Coordinate(x,y));
+            x += std::get<0>(move.path_[i]);
+            y += std::get<1>(move.path_[i]);
+        }
+    }
+    newPiece(color,move.finish_);
 }
+
 
 Move  Board::getMove(Coordinate & coord) {
     

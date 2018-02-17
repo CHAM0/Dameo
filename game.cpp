@@ -42,6 +42,10 @@ void Game::playTurn(Color const & color) {
     // Calcul si une piece du joueur peut manger
     auto eat = getLongerEat(color);
 
+    //test
+    auto moves = getAvailableMoves(color);
+    echiquier_->movePiece(moves[0],color);
+    echiquier_->displayBoard();
 
     // Cas joueur peut manger un pion
     if (eat.size() != 0 ) {
@@ -106,7 +110,7 @@ void Game::playTurn(Color const & color) {
             th.join();
         }
 
-        echiquier_->movePiece(&m);
+        echiquier_->movePiece(m,color);
 
         std::cout<<GREEN<<"Coup effectue"<<RESET<<std::endl;
     }
@@ -149,7 +153,7 @@ void Game::launch() {
 
     // pions de test
     echiquier_->newPiece(colorBlack, Coordinate(4.0,3.0));
-    echiquier_->newPiece(colorBlack, Coordinate(4.0,5.0));
+    //echiquier_->newPiece(colorBlack, Coordinate(4.0,5.0));
     echiquier_->newPiece(colorBlack, Coordinate(3.0,2.0));
     echiquier_->newPiece(colorBlack, Coordinate(4.0,1.0));
 
@@ -329,3 +333,23 @@ void Game::eatPiece(Coordinate & coord, std::vector<std::tuple<int, int>> & path
     echiquier_->newPiece(color, Coordinate(x,y));
 }
 
+std::vector<Move> Game::getAvailableMoves(const Color & color) {
+    std::vector<Move> moves;
+    auto eats = getLongerEat(color);
+    
+    if (eats.size() != 0) {
+        for (int i=0; i<eats.size(); i++) {
+            Coordinate start(std::get<0>(eats[i][0]), std::get<1>(eats[i][0]));
+            auto deplacements = computeEat(start, eats);
+            for (auto & end : deplacements) {
+                auto path = getPath(start,end,eats);
+                moves.push_back(Move(start,end,path));
+            }
+            moves[i].show();
+        }
+        return moves;
+    }
+
+
+    return moves;
+}
