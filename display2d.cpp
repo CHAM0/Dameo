@@ -17,6 +17,11 @@ Display2D::Display2D(int nbCases): window_{sf::VideoMode(size_, size_), "Dameo" 
 
 void Display2D::render() {
 
+    while (window_.isOpen()) {
+
+
+        sf::Event event;
+
         // nettoie l'ecran 
         window_.clear(sf::Color::Black);
         displayBoard();
@@ -24,12 +29,6 @@ void Display2D::render() {
         displayHelp();
         // met a jour la fenetre 
         window_.display(); 
-
-    while (window_.isOpen()) {
-
-
-        sf::Event event;
-
 
         // on inspecte tous les évènements de la fenêtre qui ont été émis depuis la précédente itération
         while (window_.pollEvent(event)) {

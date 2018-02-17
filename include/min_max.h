@@ -1,5 +1,5 @@
-#include "game.h"
-
+#pragma once
+#include "board.h"
 #include <vector>
 
 #ifndef MIN_MAX_H
@@ -9,13 +9,16 @@ class MinMax
 {
     private:
 
+    Board & m_board;
     int m_depth {};
-    std::vector<Coordinate> m_deplacements {};
+    const Color  m_color {};
 
     public:
 
-    MinMax(Game board, int depth);
-
+    MinMax(Board & dameo, int depth, const Color & color);
+    int eval(Board & board,const Color & color);
+    int min(Board & board, int depth,const Color & color);
+    int max(Board & board, int depth,const Color & color);
 };
 
 #endif

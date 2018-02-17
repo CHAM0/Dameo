@@ -54,7 +54,8 @@ class Board {
     void init(Color colorJ1, Color colorJ2);  
 
     // Deplace une piece 
-    void movePiece(Move & move, const Color & color); 
+    void movePiece(Move & move, const Color & color);
+    void movePieceInverse(Move & move, const Color & color);  
    // void movePiece(Move & move,const Color & color, std::vector<std::tuple<int, int>> & path);
 
     // Ejecte une piece de l'echiquier
@@ -89,6 +90,18 @@ class Board {
     // Permet de recuperer la direction d'un eat
     std::vector<std::tuple<int, int>> getAvailableDirections(Coordinate & coord);
 
+    std::vector<std::vector<std::tuple<int, int>>> getLongerEat(Color const & color); 
+    void recursivity(Coordinate & coord, int score, std::vector<std::tuple<int, int>> path, Color const & color, int & BestScore, std::vector<std::vector<std::tuple<int, int>>> & BestPath);
+    bool checkStartEat(Coordinate const & coord, std::vector<std::vector<std::tuple<int, int>>> & path);
+    bool checkEndEat(Coordinate const & coord, std::vector<Coordinate> & path);
+    std::vector<std::tuple<int, int>> getPath(Coordinate const & startCoord, Coordinate & endCoord, std::vector<std::vector<std::tuple<int, int>>> & path);
+    std::vector<Coordinate> computeEat(Coordinate const & coord, std::vector<std::vector<std::tuple<int, int>>> & path);
+    // Recupere une entree
+    Coordinate getDeplacement();
+    // Verifie un mouvement
+    bool checkMove(Move & move);
+    void eatPiece(Coordinate & coord, std::vector<std::tuple<int, int>> & path, Color const & color);
+    std::vector<Move> getAvailableMoves(const Color & color);
 
 };
 

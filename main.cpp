@@ -5,6 +5,5 @@
 int main() {
     Game dameo;
     dameo.launch();
-
 }
 
