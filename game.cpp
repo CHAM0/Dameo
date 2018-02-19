@@ -130,7 +130,7 @@ void Game::playTurnCursor(Color const & color) {
     std::this_thread::sleep_for(1s);
     //window_.update();
 
-    MinMax test(*echiquier_, 3, color);
+    MinMax test(*echiquier_, 2, color);
 
     /*
     Coordinate start;

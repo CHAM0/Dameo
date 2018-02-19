@@ -8,6 +8,8 @@ MinMax::MinMax(Board & dameo, int depth, const Color & color) : m_depth{depth}, 
     for (auto & d : deplacements) {
 
         dameo.movePiece(d,color);
+        dameo.displayBoard();
+
         auto colorinverse = colorNone;
         if (color == colorWhite) colorinverse = colorBlack;
         else colorinverse = colorWhite;
@@ -19,6 +21,7 @@ MinMax::MinMax(Board & dameo, int depth, const Color & color) : m_depth{depth}, 
         }
 
         dameo.movePieceInverse(d,color);
+        dameo.displayBoard();
     
     }
 
@@ -38,6 +41,7 @@ int MinMax::min(Board & board, int depth,const Color & color) {
     for (auto & d : deplacements) {
 
         board.movePiece(d,color);  
+        board.displayBoard();
         int value = max(board,depth - 1,color);
 
         if(value < minValue) {
@@ -45,6 +49,7 @@ int MinMax::min(Board & board, int depth,const Color & color) {
         }
 
         board.movePieceInverse(d,color);
+        board.displayBoard();
         //m_board = board;
     }
 
@@ -61,14 +66,20 @@ int MinMax::max(Board  & board, int depth,const Color & color) {
 
     for (auto & d : deplacements) {
 
-        board.movePiece(d,color);  
-        int value = min(board,depth - 1,color);
+        board.movePiece(d,color);
+        board.displayBoard();
+        
+        auto colorinverse = colorNone;
+        if (color == colorWhite) colorinverse = colorBlack;
+        else colorinverse = colorWhite;
+        int value = min(board,depth - 1,colorinverse);
 
         if(value > maxValue) {
             maxValue = value;
         }
 
         board.movePieceInverse(d,color);
+        board.displayBoard();
         //m_board = board;
     }
 
@@ -81,5 +92,5 @@ int MinMax::eval(Board  & board,const Color & color) {
     if (color == colorWhite) pieceJ2 = board.getPieces(colorBlack);
     else pieceJ2 = board.getPieces(colorWhite);
 
-    return pieceJ1.size() - pieceJ2.size();
+    return pieceJ1.size();
 }

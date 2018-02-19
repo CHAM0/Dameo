@@ -96,23 +96,31 @@ void Board::ejectPiece(Coordinate const & coord) {
 
 void Board::movePiece(Move & move, const Color & color) {
     
+    std::cout<<"move";
+    move.show();
     ejectPiece(move.start_);
+    std::cout<<"eject piece :"<<move.start_.getX()<<move.start_.getY();
     if (move.path_.size() != 0){
         int x = static_cast<int>(move.start_.getX());
         int y = static_cast<int>(move.start_.getY());
         for (int i=1; i<move.path_.size(); i++) {
             x += std::get<0>(move.path_[i]);
             y += std::get<1>(move.path_[i]);
+            std::cout<<"eject piece :"<<x<<y;
             ejectPiece(Coordinate(x,y));
             x += std::get<0>(move.path_[i]);
             y += std::get<1>(move.path_[i]);
         }
     }
+    std::cout<<"new piece :"<<move.finish_.getX()<<move.finish_.getY();
     newPiece(color,move.finish_);
 }
 
 void Board::movePieceInverse(Move & move, const Color & color) {
     
+    std::cout<<"move inverse";
+    move.show();
+    std::cout<<"eject piece :"<<move.finish_.getX()<<move.finish_.getY();
     ejectPiece(move.finish_);
     if (move.path_.size() != 0){
         int x = static_cast<int>(move.finish_.getX());
@@ -120,6 +128,7 @@ void Board::movePieceInverse(Move & move, const Color & color) {
         for (int i=move.path_.size()-1; i>0; i--) {
             x -= std::get<0>(move.path_[i]);
             y -= std::get<1>(move.path_[i]);
+            std::cout<<"new piece :"<<x<<y;
             if (color == colorWhite) newPiece(colorBlack,Coordinate(x,y));
             else if (color == colorBlack) newPiece(colorWhite,Coordinate(x,y));
             else std::cin>>x;
@@ -127,6 +136,7 @@ void Board::movePieceInverse(Move & move, const Color & color) {
             y -= std::get<1>(move.path_[i]);
         }
     }
+    std::cout<<"new piece :"<<move.finish_.getX()<<move.finish_.getY();
     newPiece(color,move.start_);
 }
 
@@ -525,7 +535,7 @@ std::vector<Move> Board::getAvailableMoves(const Color & color) {
         }
     }
     std::cout<<"Listes des moves "<<std::endl;
-    //for (auto m : moves) m.show();
+    for (auto m : moves) m.show();
 
     return moves;
 }
