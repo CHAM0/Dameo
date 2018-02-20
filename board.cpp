@@ -96,23 +96,19 @@ void Board::ejectPiece(Coordinate const & coord) {
 
 void Board::movePiece(Move & move, const Color & color) {
     
-    std::cout<<"move";
     move.show();
     ejectPiece(move.start_);
-    std::cout<<"eject piece :"<<move.start_.getX()<<move.start_.getY();
     if (move.path_.size() != 0){
         int x = static_cast<int>(move.start_.getX());
         int y = static_cast<int>(move.start_.getY());
         for (int i=1; i<move.path_.size(); i++) {
             x += std::get<0>(move.path_[i]);
             y += std::get<1>(move.path_[i]);
-            std::cout<<"eject piece :"<<x<<y;
             ejectPiece(Coordinate(x,y));
             x += std::get<0>(move.path_[i]);
             y += std::get<1>(move.path_[i]);
         }
     }
-    std::cout<<"new piece :"<<move.finish_.getX()<<move.finish_.getY();
     newPiece(color,move.finish_);
 }
 
@@ -160,7 +156,7 @@ Move  Board::getMove(Coordinate & coord) {
     return  Move(start,finish);
 }
 
-std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coord) {
+std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coord, Color color) {
     std::vector<std::tuple<int, int>> directions;
     auto s = getSquare(coord);
     auto piece = s->piece;
@@ -169,8 +165,8 @@ std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coo
 
     nextCoord.add(1.0,0.0);
     if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord);  
-        if (!checkColor(piece->getColor(), nextSquare)){
+        nextSquare = getSquare(nextCoord); 
+        if (!checkColor(color, nextSquare)){
             if (!checkColor(colorNone, nextSquare)) {
                 nextCoord.add(1.0,0.0);
                 if (nextCoord.isValid(size_)) {
@@ -185,7 +181,7 @@ std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coo
     nextCoord.add(-1.0,0.0);
     if (nextCoord.isValid(size_)) {
         nextSquare = getSquare(nextCoord);  
-        if (!checkColor(piece->getColor(), nextSquare)){
+        if (!checkColor(color, nextSquare)){
             if (!checkColor(colorNone, nextSquare)) {
                 nextCoord.add(-1.0,0.0);
                 if (nextCoord.isValid(size_)) {
@@ -200,7 +196,7 @@ std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coo
     nextCoord.add(0.0,1.0);
     if (nextCoord.isValid(size_)) {
         nextSquare = getSquare(nextCoord);  
-        if (!checkColor(piece->getColor(), nextSquare)){
+        if (!checkColor(color, nextSquare)){
             if (!checkColor(colorNone, nextSquare)) {
                 nextCoord.add(0.0,1.0);
                 if (nextCoord.isValid(size_)) {
@@ -215,7 +211,7 @@ std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coo
     nextCoord.add(0.0,-1.0);
     if (nextCoord.isValid(size_)) {
         nextSquare = getSquare(nextCoord);  
-        if (!checkColor(piece->getColor(), nextSquare)){
+        if (!checkColor(color, nextSquare)){
             if (!checkColor(colorNone, nextSquare)) {
                 nextCoord.add(0.0,-1.0);
                 if (nextCoord.isValid(size_)) {
@@ -228,6 +224,7 @@ std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coo
 
     return directions;
 }
+
 
 Coordinate  Board::jumpPiece(Piece & piece, double x, double y) {
     auto coord = piece.getCoordinate();
@@ -275,7 +272,7 @@ std::vector<Coordinate> Board::getDeplacements(Coordinate & coord) {
             }
         }            
     }
-    
+
     // deplacement diagonale droite
     nextCoord.add(0.0, 1.0);
     if (nextCoord.isValid(size_)) {
@@ -310,18 +307,19 @@ std::vector<Coordinate> Board::getDeplacements(Coordinate & coord) {
         }
     }
 
+/*
     // deplace a gauche 
     nextCoord = coord;
     nextCoord.add(0.0,1.0);
     if (nextCoord.isValid(size_)) {
         nextSquare = getSquare(nextCoord);
         if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
-        /*
-        else {
-                auto c = jumpPiece(*piece,0.0, 1.0);
-                if (c.isValid(size_)) deplacements.push_back(c);
-        }
-        */
+        
+        //else {
+          //      auto c = jumpPiece(*piece,0.0, 1.0);
+            //    if (c.isValid(size_)) deplacements.push_back(c);
+        //}
+        
     } 
 
     // deplace a droite 
@@ -329,13 +327,14 @@ std::vector<Coordinate> Board::getDeplacements(Coordinate & coord) {
     if (nextCoord.isValid(size_)) {
         nextSquare = getSquare(nextCoord);
         if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
-        /*
-        else {
-                auto c = jumpPiece(*piece,0.0, -1.0);
-                if (c.isValid(size_)) deplacements.push_back(c);
-        }
-        */
+        
+        //else {
+          //      auto c = jumpPiece(*piece,0.0, -1.0);
+            //    if (c.isValid(size_)) deplacements.push_back(c);
+        //}
+        
     }
+*/
 
     return deplacements;
 }
@@ -363,14 +362,14 @@ std::vector<std::vector<std::tuple<int, int>>> Board::getLongerEat(Color const &
     std::vector<std::vector<std::tuple<int, int>>> BestPath;
 
     int score = 0;
-    std::vector<std::tuple<int, int>> path;
+    std::vector<std::tuple<int, int>> path;  
 
     auto pieces = getPieces(color);
 
     for(auto & p : pieces) {
         auto coord = p->getCoordinate();
         path.push_back(std::make_tuple(static_cast<int>(coord.getX()), static_cast<int>(coord.getY())));
-        recursivity(coord, score, path, color, BestScore, BestPath);
+        if (coord.isValid(size_)) recursivity(coord, score, path, color, BestScore, BestPath);
         path.clear();
     }
 
@@ -380,11 +379,11 @@ std::vector<std::vector<std::tuple<int, int>>> Board::getLongerEat(Color const &
 }
 
 void Board::recursivity(Coordinate & coord, int score, std::vector<std::tuple<int, int>> path, Color const & color, int & BestScore, std::vector<std::vector<std::tuple<int, int>>> & BestPath) {
-    // std::cout<<"recursivite ";
-    // coord.display();
+    coord.display();
     // std::cout<<" : ";
-    auto availableDirections = getAvailableDirections(coord);
-
+    auto availableDirections = getAvailableDirections(coord,color);
+    for (auto & t : availableDirections){
+    }
     for (auto & d : availableDirections) {
 
         ejectPiece(coord.add(std::get<0>(d),std::get<1>(d)));
@@ -395,7 +394,7 @@ void Board::recursivity(Coordinate & coord, int score, std::vector<std::tuple<in
         recursivity(nextCoord, nextScore, path, color,BestScore, BestPath);
 
         if(color == colorWhite) newPiece(colorBlack,coord.add(std::get<0>(d),std::get<1>(d)));
-        else if (color == colorBlack) newPiece(colorBlack,coord.add(std::get<0>(d),std::get<1>(d)));
+        else newPiece(colorWhite,coord.add(std::get<0>(d),std::get<1>(d)));
         path.pop_back();
     }
 
@@ -516,7 +515,6 @@ std::vector<Move> Board::getAvailableMoves(const Color & color) {
                 Move move(start,deplacements[i],path);
                 if (checkMove(move)) moves.push_back(Move(start,deplacements[i],path));
         }
-        std::cout<<"Listes des moves eats "<<std::endl;
         for (auto m : moves) m.show();
 
         return moves;
@@ -534,8 +532,8 @@ std::vector<Move> Board::getAvailableMoves(const Color & color) {
             }
         }
     }
-    std::cout<<"Listes des moves "<<std::endl;
-    for (auto m : moves) m.show();
+    //std::cout<<"Listes des moves "<<std::endl;
+    //for (auto m : moves) m.show();
 
     return moves;
 }

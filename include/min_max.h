@@ -1,6 +1,7 @@
 #pragma once
 #include "board.h"
 #include <vector>
+#include <stdlib.h>  
 
 #ifndef MIN_MAX_H
 #define MIN_MAX_H 
@@ -13,7 +14,10 @@ class MinMax
     int m_depth {};
     const Color  m_color {};
 
+
     public:
+
+    Move m_bestMove;
 
     MinMax(Board & dameo, int depth, const Color & color);
     int eval(Board & board,const Color & color);

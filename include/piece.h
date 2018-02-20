@@ -39,6 +39,11 @@ class Piece {
 
     // Permet de deplacer une piece 
     void moveTo(Coordinate const & newCoord) {coordinate_ = newCoord;}
+
+    void copy(Piece* piece) {
+        piece->color_ = color_;
+        piece->coordinate_ = coordinate_;
+    }
 };
 
 #endif

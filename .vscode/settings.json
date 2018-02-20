@@ -10,6 +10,7 @@
         "algorithm": "cpp",
         "thread": "cpp",
         "chrono": "cpp",
-        "limits": "cpp"
+        "limits": "cpp",
+        "ratio": "cpp"
     }
 }

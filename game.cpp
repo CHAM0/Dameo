@@ -127,11 +127,13 @@ void Game::playTurnCursor(Color const & color) {
 
 
     using namespace std::literals;
-    std::this_thread::sleep_for(1s);
+    std::this_thread::sleep_for(3s);
     //window_.update();
 
-    MinMax test(*echiquier_, 2, color);
-
+    MinMax test(*echiquier_, 3, color);
+    //auto move = test.m_bestMove;
+    //echiquier_->movePiece(move,color);
+    std::cout<<"test"<<std::endl;
     /*
     Coordinate start;
     std::vector<Coordinate> deplacement;
