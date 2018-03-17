@@ -48,7 +48,7 @@ class Board {
     std::size_t getSize() {return size_;}
 
     // Permet d'ajouter une nouvelle piece sur l'echiquier
-    void newPiece(Color color, Coordinate const & coordinate);
+    void newPiece(Color color, Coordinate const & coordinate, bool king = false);
 
     // Initialise l'echiquier 
     void init(Color colorJ1, Color colorJ2);  
@@ -112,6 +112,22 @@ class Board {
             board.board_[i].coordinate = board_[i].coordinate;
         }
 
+    }
+
+    void checkKing(Move& move, const Color& color) {
+        int x;
+        if (color == colorWhite && move.finish_.getX() == 7){
+            std::cout<<"King White"<<std::endl;
+            std::cin>>x;
+            auto square = getSquare(move.finish_);
+            square->piece->setKing();
+        }
+        else if (color == colorBlack && move.finish_.getX() == 0) {
+            std::cout<<"King Black"<<std::endl;
+            std::cin>>x;
+            auto square = getSquare(move.finish_);
+            square->piece->setKing();
+        }
     }
 
 };

@@ -16,11 +16,14 @@ class Piece {
     Color color_ {};
 /* Coordonnee de la piece */
     Coordinate coordinate_ {};
+/* est un roi ? */
+    bool isKing_ {false};
 
   public:
     
     Piece(): color_{colorNone}, coordinate_{} {}; 
     Piece(Color color, std::size_t x, std::size_t y): color_{color}, coordinate_{x,y} {};
+    Piece(Color color, std::size_t x, std::size_t y, bool king): color_{color}, coordinate_{x,y}, isKing_{king} {};
 
     // Permet de retourner la couleur d'une piece 
     Color getColor() const {return color_;}
@@ -44,6 +47,9 @@ class Piece {
         piece->color_ = color_;
         piece->coordinate_ = coordinate_;
     }
+
+    void setKing() {isKing_ = true;}
+    bool getKing() {return isKing_;}
 };
 
 #endif

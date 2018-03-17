@@ -1,4 +1,4 @@
-#include "include/board.h"
+#include "../include/board.h"
 
 Board::Board(std::size_t size) {
     size_ = size;
@@ -55,8 +55,8 @@ void Board::displayLogs() {
     std::cout<<"\n"<<std::endl;
 } 
 
-void Board::newPiece(Color color, Coordinate const & coord) {
-    Piece *tmp = new Piece(color, coord.getX(), coord.getY());
+void Board::newPiece(Color color, Coordinate const & coord, bool king) {
+    Piece *tmp = new Piece(color, coord.getX(), coord.getY(), king);
     auto square = getSquare(coord);
     square->piece = tmp;
 
@@ -96,7 +96,11 @@ void Board::ejectPiece(Coordinate const & coord) {
 
 void Board::movePiece(Move & move, const Color & color) {
     
-    move.show();
+    // verifie si un rois est deplace 
+    auto square = getSquare(move.start_);
+    bool king = square->piece->getKing();
+
+
     ejectPiece(move.start_);
     if (move.path_.size() != 0){
         int x = static_cast<int>(move.start_.getX());
@@ -109,7 +113,9 @@ void Board::movePiece(Move & move, const Color & color) {
             y += std::get<1>(move.path_[i]);
         }
     }
-    newPiece(color,move.finish_);
+
+    if (king) newPiece(color,move.finish_, king);
+    else newPiece(color,move.finish_);
 }
 
 void Board::movePieceInverse(Move & move, const Color & color) {
@@ -162,55 +168,51 @@ std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coo
     auto piece = s->piece;
     auto nextCoord = coord;
     auto nextSquare = getSquare(nextCoord);
+    bool continuer = true;
 
-    nextCoord.add(1.0,0.0);
-    if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord); 
-        if (!checkColor(color, nextSquare)){
-            if (!checkColor(colorNone, nextSquare)) {
-                nextCoord.add(1.0,0.0);
-                if (nextCoord.isValid(size_)) {
-                    nextSquare = getSquare(nextCoord);
-                    if (checkColor(colorNone, nextSquare)) directions.push_back(std::make_tuple(1,0));
-                } 
+    if (piece->getKing()) {
+        while (continuer) {
+            nextCoord.add(0.0,1.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);
+                if (!checkColor(colorNone,nextSquare)) continuer = false;
             }
+            else continuer = false;
         }
     }
-
-    nextCoord = coord;
-    nextCoord.add(-1.0,0.0);
-    if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord);  
-        if (!checkColor(color, nextSquare)){
-            if (!checkColor(colorNone, nextSquare)) {
-                nextCoord.add(-1.0,0.0);
-                if (nextCoord.isValid(size_)) {
-                    nextSquare = getSquare(nextCoord);
-                    if (checkColor(colorNone, nextSquare)) directions.push_back(std::make_tuple(-1,0));
-                }
-            }
-        }     
+    else {
+        nextCoord.add(0.0,1.0);
+        nextSquare = getSquare(nextCoord);
     }
-
-    nextCoord = coord;
-    nextCoord.add(0.0,1.0);
-    if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord);  
+    if (nextCoord.isValid(size_)){
         if (!checkColor(color, nextSquare)){
             if (!checkColor(colorNone, nextSquare)) {
                 nextCoord.add(0.0,1.0);
                 if (nextCoord.isValid(size_)) {
                     nextSquare = getSquare(nextCoord);
                     if (checkColor(colorNone, nextSquare)) directions.push_back(std::make_tuple(0,1));
-                }    
+                }
             }
         }
     }
 
     nextCoord = coord;
-    nextCoord.add(0.0,-1.0);
-    if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord);  
+    continuer = true;
+    if (piece->getKing()) {
+        while (continuer) {
+            nextCoord.add(0.0,-1.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);
+                if (!checkColor(colorNone,nextSquare)) continuer = false;
+            }
+            else continuer = false;
+        }
+    }
+    else {
+        nextCoord.add(0.0,-1.0);
+        nextSquare = getSquare(nextCoord);
+    }
+    if (nextCoord.isValid(size_)){
         if (!checkColor(color, nextSquare)){
             if (!checkColor(colorNone, nextSquare)) {
                 nextCoord.add(0.0,-1.0);
@@ -221,6 +223,66 @@ std::vector<std::tuple<int, int>> Board::getAvailableDirections(Coordinate & coo
             }
         }
     }
+
+
+    nextCoord = coord;
+    continuer = true;
+    if (piece->getKing()) {
+        while (continuer) {
+            nextCoord.add(1.0,0.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);
+                if (!checkColor(colorNone,nextSquare)) continuer = false;
+            }
+            else continuer = false;
+        }
+    }
+    else {
+        nextCoord.add(1.0,0.0);
+        nextSquare = getSquare(nextCoord);
+    }
+    if (nextCoord.isValid(size_)){
+        if (!checkColor(color, nextSquare)){
+            if (!checkColor(colorNone, nextSquare)) {
+                nextCoord.add(1.0,0.0);
+                if (nextCoord.isValid(size_)) {
+                    nextSquare = getSquare(nextCoord);
+                    if (checkColor(colorNone, nextSquare)) directions.push_back(std::make_tuple(1,0));
+                }
+            }
+        }
+    }
+
+
+
+    nextCoord = coord;
+    continuer = true;
+    if (piece->getKing()) {
+        while (continuer) {
+            nextCoord.add(-1.0,0.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);
+                if (!checkColor(colorNone,nextSquare)) continuer = false;
+            }
+            else continuer = false;
+        }
+    }
+    else {
+        nextCoord.add(-1.0,0.0);
+        nextSquare = getSquare(nextCoord);
+    }
+    if (nextCoord.isValid(size_)){
+        if (!checkColor(color, nextSquare)){
+            if (!checkColor(colorNone, nextSquare)) {
+                nextCoord.add(-1.0,0.0);
+                if (nextCoord.isValid(size_)) {
+                    nextSquare = getSquare(nextCoord);
+                    if (checkColor(colorNone, nextSquare)) directions.push_back(std::make_tuple(-1,0));
+                }
+            }
+        }
+    }
+ 
 
     return directions;
 }
@@ -246,95 +308,193 @@ std::vector<Coordinate> Board::getDeplacements(Coordinate & coord) {
     std::vector<Coordinate> deplacements;
     auto s = getSquare(coord);
     auto piece = s->piece;
-    auto nextCoord = coord;
-    auto nextSquare = getSquare(nextCoord);
-    
-    // deplacement en avant 
-    if(piece->getColor()== 1) {
-        nextCoord.add(1.0,0.0);
-        if (nextCoord.isValid(size_)) {
-            nextSquare = getSquare(nextCoord);  
-            if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
-            else {
-                auto c = jumpPiece(*piece,1.0, 0.0);
-                if (c.isValid(size_)) deplacements.push_back(c);
+    if (!piece->getKing()){
+        auto nextCoord = coord;
+        auto nextSquare = getSquare(nextCoord);
+        
+        // deplacement en avant 
+        if(piece->getColor()== 1) {
+            nextCoord.add(1.0,0.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);  
+                if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+                else {
+                    auto c = jumpPiece(*piece,1.0, 0.0);
+                    if (c.isValid(size_)) deplacements.push_back(c);
+                }
             }
         }
-    }
-    else {
-        nextCoord.subb(1.0,0.0);
+        else {
+            nextCoord.subb(1.0,0.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);  
+                if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+                else {
+                    auto c = jumpPiece(*piece,-1.0, 0.0);
+                    if (c.isValid(size_)) deplacements.push_back(c);
+                }
+            }            
+        }
+
+        // deplacement diagonale droite
+        nextCoord.add(0.0, 1.0);
         if (nextCoord.isValid(size_)) {
-            nextSquare = getSquare(nextCoord);  
+            nextSquare = getSquare(nextCoord);
             if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
             else {
-                auto c = jumpPiece(*piece,-1.0, 0.0);
-                if (c.isValid(size_)) deplacements.push_back(c);
+                    if(piece->getColor()== 1) {
+                        auto c = jumpPiece(*piece,1.0, 1.0);
+                        if (c.isValid(size_)) deplacements.push_back(c);
+                    }
+                    else {
+                        auto c = jumpPiece(*piece,-1.0, 1.0);
+                        if (c.isValid(size_)) deplacements.push_back(c);
+                    } 
             }
-        }            
-    }
+        }    
 
-    // deplacement diagonale droite
-    nextCoord.add(0.0, 1.0);
-    if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord);
-        if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
-        else {
+        // deplacement diagonale gauche 
+        nextCoord.subb(0.0, 2.0);
+        if (nextCoord.isValid(size_)) {
+            nextSquare = getSquare(nextCoord);
+            if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+            else {
                 if(piece->getColor()== 1) {
-                    auto c = jumpPiece(*piece,1.0, 1.0);
+                    auto c = jumpPiece(*piece,1.0, -1.0);
                     if (c.isValid(size_)) deplacements.push_back(c);
                 }
                 else {
-                    auto c = jumpPiece(*piece,-1.0, 1.0);
+                    auto c = jumpPiece(*piece,-1.0, -1.0);
                     if (c.isValid(size_)) deplacements.push_back(c);
                 } 
-        }
-    }    
-
-    // deplacement diagonale gauche 
-    nextCoord.subb(0.0, 2.0);
-    if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord);
-        if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
-        else {
-            if(piece->getColor()== 1) {
-                auto c = jumpPiece(*piece,1.0, -1.0);
-                if (c.isValid(size_)) deplacements.push_back(c);
             }
-            else {
-                auto c = jumpPiece(*piece,-1.0, -1.0);
-                if (c.isValid(size_)) deplacements.push_back(c);
-            } 
         }
     }
 
-/*
-    // deplace a gauche 
-    nextCoord = coord;
-    nextCoord.add(0.0,1.0);
-    if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord);
-        if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
-        
-        //else {
-          //      auto c = jumpPiece(*piece,0.0, 1.0);
-            //    if (c.isValid(size_)) deplacements.push_back(c);
-        //}
-        
-    } 
+    //Deplacement rois
+    else {
+    
+    // deplacement en avant 
+        auto nextCoord = coord;
+        auto nextSquare = getSquare(nextCoord);
+        bool continuer = true;
+        while (continuer) {
+            nextCoord.add(1.0,0.0);
+            if (nextCoord.isValid(size_)){
+                nextSquare = getSquare(nextCoord);  
+                if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+                else {
+                    continuer = false;
+                }
+            }
+            else continuer=false;
+        }
+    // deplacement en arriere 
+        nextCoord = coord;
+        continuer = true;
+        while(continuer){
+            nextCoord.add(-1.0,0.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);  
+                if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+                else {
+                    continuer = false;
+                }
+            }
+            else continuer=false;
+        }      
 
-    // deplace a droite 
-    nextCoord.subb(0.0,2.0);
-    if (nextCoord.isValid(size_)) {
-        nextSquare = getSquare(nextCoord);
-        if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
-        
-        //else {
-          //      auto c = jumpPiece(*piece,0.0, -1.0);
-            //    if (c.isValid(size_)) deplacements.push_back(c);
-        //}
-        
+    // deplacement droite
+        nextCoord = coord;
+        continuer = true;
+        while(continuer){
+            nextCoord.add(0.0,1.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);  
+                if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+                else {
+                    continuer = false;
+                }
+            } 
+            else continuer=false;  
+        }  
+
+        // deplacement gauche
+        nextCoord = coord;
+        continuer = true;
+        while(continuer){
+            nextCoord.add(0.0,-1.0);
+            if (nextCoord.isValid(size_)) {
+                nextSquare = getSquare(nextCoord);  
+                if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+                else {
+                    continuer = false;
+                }
+            }   
+            else continuer=false;
+        }   
+
+    // deplacement diagonale 
+    nextCoord = coord;
+    continuer = true;
+    while(continuer){
+        nextCoord.add(1.0, 1.0);
+        if (nextCoord.isValid(size_)) {
+            nextSquare = getSquare(nextCoord);
+            if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+            else {
+                continuer = false;
+            }
+        } 
+        else continuer=false;  
     }
-*/
+
+    // deplacement diagonale 
+    nextCoord = coord;
+    continuer = true;
+    while(continuer){
+        nextCoord.add(-1.0, -1.0);
+        if (nextCoord.isValid(size_)) {
+            nextSquare = getSquare(nextCoord);
+            if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+            else {
+                continuer = false;
+            }
+        }  
+        else continuer=false;  
+    }
+
+    // deplacement diagonale 
+    nextCoord = coord;
+    continuer = true;
+    while(continuer){
+        nextCoord.add(-1.0, 1.0);
+        if (nextCoord.isValid(size_)) {
+            nextSquare = getSquare(nextCoord);
+            if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+            else {
+                continuer = false;
+            }
+        }  
+        else continuer=false;  
+    }
+        // deplacement diagonale
+    nextCoord = coord;
+    continuer = true;
+    while(continuer){
+        nextCoord.add(1.0, -1.0);
+        if (nextCoord.isValid(size_)) {
+            nextSquare = getSquare(nextCoord);
+            if (checkColor(colorNone, nextSquare)) deplacements.push_back(nextCoord);
+            else {
+                continuer = false;
+            }
+        }
+        else continuer=false;    
+    }
+
+
+ }
 
     return deplacements;
 }
@@ -369,6 +529,7 @@ std::vector<std::vector<std::tuple<int, int>>> Board::getLongerEat(Color const &
     for(auto & p : pieces) {
         auto coord = p->getCoordinate();
         path.push_back(std::make_tuple(static_cast<int>(coord.getX()), static_cast<int>(coord.getY())));
+        //recursivity king
         if (coord.isValid(size_)) recursivity(coord, score, path, color, BestScore, BestPath);
         path.clear();
     }
@@ -379,23 +540,57 @@ std::vector<std::vector<std::tuple<int, int>>> Board::getLongerEat(Color const &
 }
 
 void Board::recursivity(Coordinate & coord, int score, std::vector<std::tuple<int, int>> path, Color const & color, int & BestScore, std::vector<std::vector<std::tuple<int, int>>> & BestPath) {
-    coord.display();
+    //coord.display();
     // std::cout<<" : ";
     auto availableDirections = getAvailableDirections(coord,color);
-    for (auto & t : availableDirections){
+
+    auto currentPiece = getSquare(coord)->piece;
+    if (currentPiece->getKing() == true) {
+    // king
+
+    std::cout<<"king recursivity"<<std::endl;
+
+        Color oppositeColor = colorWhite;
+        if (color == colorWhite) oppositeColor = colorBlack;
+        for (auto & d : availableDirections) {
+
+            auto oppNextCoord = coord.add(std::get<0>(d), std::get<1>(d));
+
+            while ( getSquare(oppNextCoord)->piece->getColor() != oppositeColor) {
+                oppNextCoord = oppNextCoord.add(std::get<0>(d), std::get<1>(d));
+            }
+            
+            bool king = getSquare(oppNextCoord)->piece->getKing();
+            ejectPiece(oppNextCoord);
+
+            auto nextCoord = oppNextCoord.add(std::get<0>(d), std::get<1>(d));
+            auto nextScore = score + 1;
+            
+            path.push_back(d);
+            recursivity(nextCoord, nextScore, path, color,BestScore, BestPath);
+
+            if(color == colorWhite) newPiece(colorBlack, oppNextCoord);
+            else newPiece(colorWhite,oppNextCoord, king);
+            path.pop_back();
+        }
     }
-    for (auto & d : availableDirections) {
 
-        ejectPiece(coord.add(std::get<0>(d),std::get<1>(d)));
+    else {
+    // pas king
+        for (auto & d : availableDirections) {
 
-        auto nextCoord = coord.add(2 * std::get<0>(d), 2 * std::get<1>(d));
-        auto nextScore = score + 1;
-        path.push_back(d);
-        recursivity(nextCoord, nextScore, path, color,BestScore, BestPath);
+            bool king = getSquare(coord.add(std::get<0>(d),std::get<1>(d)))->piece->getKing();
+            ejectPiece(coord.add(std::get<0>(d),std::get<1>(d)));
 
-        if(color == colorWhite) newPiece(colorBlack,coord.add(std::get<0>(d),std::get<1>(d)));
-        else newPiece(colorWhite,coord.add(std::get<0>(d),std::get<1>(d)));
-        path.pop_back();
+            auto nextCoord = coord.add(2 * std::get<0>(d), 2 * std::get<1>(d));
+            auto nextScore = score + 1;
+            path.push_back(d);
+            recursivity(nextCoord, nextScore, path, color,BestScore, BestPath);
+
+            if(color == colorWhite) newPiece(colorBlack,coord.add(std::get<0>(d),std::get<1>(d)));
+            else newPiece(colorWhite,coord.add(std::get<0>(d),std::get<1>(d)),king);
+            path.pop_back();
+        }
     }
 
     if (score > BestScore) {
@@ -486,6 +681,7 @@ bool Board::checkMove(Move & move) {
 }
 
 void Board::eatPiece(Coordinate & coord, std::vector<std::tuple<int, int>> & path, Color const & color) {
+    bool king = getSquare(coord)->piece->getKing();
     ejectPiece(coord);
     int x = static_cast<int>(coord.getX());
     int y = static_cast<int>(coord.getY());
@@ -496,7 +692,7 @@ void Board::eatPiece(Coordinate & coord, std::vector<std::tuple<int, int>> & pat
         x += std::get<0>(path[i]);
         y += std::get<1>(path[i]);
     }
-    newPiece(color, Coordinate(x,y));
+    newPiece(color, Coordinate(x,y),king);
 }
 
 

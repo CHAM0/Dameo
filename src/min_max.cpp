@@ -1,4 +1,4 @@
-#include "include/min_max.h"
+#include "../include/min_max.h"
 
 MinMax::MinMax(Board & dameo, int depth, const Color & color) : m_depth{depth}, m_board{dameo}, m_color{color} {
     auto deplacements = dameo.getAvailableMoves(color);
@@ -35,6 +35,8 @@ MinMax::MinMax(Board & dameo, int depth, const Color & color) : m_depth{depth}, 
     std::cout<<"Mouvement choisit : ";
     bestMove.show();
     dameo.movePiece(bestMove,color);
+    dameo.checkKing(bestMove,color);
+    
     //m_bestMove = bestMove;
 }
 

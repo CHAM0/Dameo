@@ -1,4 +1,4 @@
-#include "include/display2d.h"
+#include "../include/display2d.h"
 
 Display2D::Display2D(int nbCases): window_{sf::VideoMode(size_, size_), "Dameo" /*, sf::Style::None */}, scale_{nbCases} {
     // Création du plateau

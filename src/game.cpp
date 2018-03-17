@@ -1,4 +1,4 @@
-#include "include/game.h"
+#include "../include/game.h"
 
 
 Game::Game(): window_(8) {
@@ -19,10 +19,10 @@ void Game::play() {
     while (1 == 1) {
         // Sauvegarde de l'etat actuel du jeux
         states_.push_back(getCurrentState());
+        //playTurn(colorWhite);
         playTurnCursor(colorWhite);
         playTurnCursor(colorBlack);
         // Tour du joueur 1
-        //playTurn(colorWhite);
         //playTurn(colorBlack);
     }
 
@@ -42,13 +42,6 @@ void Game::playTurn(Color const & color) {
 
     // Calcul si une piece du joueur peut manger
     auto eat = echiquier_->getLongerEat(color);
-
-    //test
-    //auto moves = getAvailableMoves(color);
-    //echiquier_->movePiece(moves[1],color);
-    //echiquier_->displayBoard();
-    //echiquier_->movePieceInverse(moves[1],color);
-    //echiquier_->displayBoard();
 
     // Cas joueur peut manger un pion
     if (eat.size() != 0 ) {
@@ -86,6 +79,7 @@ void Game::playTurn(Color const & color) {
             window_.hideHelp();
             move = echiquier_->getDeplacement();
             deplacement = echiquier_->getDeplacements(move);
+            for (auto & d : deplacement)d.display();
             window_.setPieceHelp(deplacement);
 
             // Selection coordonnee d'arrive
@@ -161,9 +155,9 @@ void Game::playTurnCursor(Color const & color) {
 void Game::launch() {
 
     // pions de test
-    //echiquier_->newPiece(colorBlack, Coordinate(4.0,3.0));
-    //echiquier_->newPiece(colorBlack, Coordinate(4.0,5.0));
-    //echiquier_->newPiece(colorBlack, Coordinate(3.0,2.0));
+    echiquier_->newPiece(colorWhite, Coordinate(3.0,0.0), true);
+    //echiquier_->newPiece(colorBlack, Coordinate(3.0,1.0));
+    //echiquier_->newPiece(colorBlack, Coordinate(3.0,3.0));
     //echiquier_->newPiece(colorBlack, Coordinate(4.0,1.0));
 
     std::thread test(&Game::play,this);
