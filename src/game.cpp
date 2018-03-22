@@ -12,19 +12,97 @@ Game::Game(): window_(8) {
     echiquier_ = new Board(size);
     echiquier_->init(colorWhite,colorBlack);
 
-    std::cout<<GREEN<<"\n\tDebut de la partie\n"<<GREEN<<std::endl;
 }
 
 void Game::play() {
-    while (1 == 1) {
-        // Sauvegarde de l'etat actuel du jeux
-        states_.push_back(getCurrentState());
-        //playTurn(colorWhite);
-        playTurnCursor(colorWhite);
-        playTurnCursor(colorBlack);
-        // Tour du joueur 1
-        //playTurn(colorBlack);
+
+    int choix = 0;
+
+    while (choix < 1 || choix > 8) {  
+        std::cout<<"\t# Menu # "<<std::endl;
+        std::cout<<"1- Reprendre partie en cours"<<std::endl;
+        std::cout<<"2- Nouvelle partie P1 vs P2"<<std::endl;
+        std::cout<<"3- Nouvelle partie P1 vs IA (facile)"<<std::endl;
+        std::cout<<"4- Nouvelle partie P1 vs IA (moyen)"<<std::endl;
+        std::cout<<"5- Nouvelle partie P1 vs IA (difficile)"<<std::endl;
+        std::cout<<"6- Nouvelle partie IA vs IA"<<std::endl;
+    
+        std::cout<<"choix : ";
+        std::cin>>choix;
     }
+
+    switch (choix){
+        case 1: std::cout<<"reprise partie"<<std::endl;
+        case 2: {
+                std::cout<<"J1 ou J2 commence ? : "<<std::endl;
+                std::string first;
+                std::cout<<"choix : ";
+                std::cin>>first;
+                if (first == "J2") turn("p1", "p2", "J2");
+                else turn("p1", "p2", "J1");
+        }
+        case 3: turn("p1", "ia2", "J1");
+        case 4: turn("p1", "ia2", "J1");
+        case 5: turn("p1", "ia2", "J1");
+        case 6: turn("ia1", "ia2", "J1");
+
+    }
+
+    std::cout<<"\n\nFin de partie"<<std::endl;
+    window_.setState(getCurrentState());
+}
+
+void Game::turn(std::string c1, std::string c2, std::string first) {
+
+  if (first == "J2") {
+    while (1==1){
+
+    //sauvegarde etat du jeux
+    states_.push_back(getCurrentState());
+
+    if (c2 == "p2") playTurn(colorBlack);
+    else if (c2 == "ia2") playTurnCursor(colorBlack);
+
+    if (echiquier_->gameOver(colorWhite)) {
+        std::cout<<"Joueur 2 a gagne"<<std::endl;
+        return;
+    }
+
+    if (c1 == "p1") playTurn(colorWhite);
+    else if (c1 == "ia1") playTurnCursor(colorWhite);
+
+    if (echiquier_->gameOver(colorBlack)) {
+        std::cout<<"Joueur 1 a gagne"<<std::endl;
+        return;
+    }
+
+    }
+  }
+
+  else {
+    while (1==1){
+
+        //sauvegarde etat du jeux
+        states_.push_back(getCurrentState());
+
+        if (c1 == "p1") playTurn(colorWhite);
+        else if (c1 == "ia1") playTurnCursor(colorWhite);
+
+        if (echiquier_->gameOver(colorBlack)) {
+            std::cout<<"Joueur 1 a gagne"<<std::endl;
+            return;
+        }
+
+        if (c2 == "p2") playTurn(colorBlack);
+        else if (c2 == "ia2") playTurnCursor(colorBlack);
+
+        if (echiquier_->gameOver(colorWhite)) {
+            std::cout<<"Joueur 2 a gagne"<<std::endl;
+            return;
+        }
+
+    }
+  }
 
 }
 
@@ -34,6 +112,21 @@ void Game::playTurn(Color const & color) {
     states_.push_back(getCurrentState());
     // Affichage console
     echiquier_->displayBoard();
+
+    //Menu
+    char menu = 'n';
+    std::cout<<"Entrer dans le menu ? y/n : "<<std::endl;
+    std::cout<<"choix : ";
+    std::cin>>menu;
+
+    if (menu == 'y') {
+        std::cout<<"1- Sauvegarder la partie"<<std::endl;
+        std::cout<<"2- Echanger les couleurs"<<std::endl;
+        std::cout<<"3- sortir du menu"<<std::endl;
+
+        std::cout<<"choix : ";
+        std::cin>>menu;        
+    }
 
     std::cout<<"\nTour du joueur "<<color<<"\n "<<std::endl;
     window_.setState(getCurrentState());
@@ -46,14 +139,14 @@ void Game::playTurn(Color const & color) {
     // Cas joueur peut manger un pion
     if (eat.size() != 0 ) {
         window_.hideHelp();
-        move = echiquier_->getDeplacement();
+        move = getDeplacement();
         while (echiquier_->checkStartEat(move, eat)) {
             std::cout<<RED<<"\nImpossible de deplacer ce pion vous pouvez manger avec :\n"<<RESET<<std::endl;
             for (int i=0; i<eat.size(); i++) {
                 std::cout<<std::get<0>(eat[i][0])<<":"<<std::get<1>(eat[i][0]);
                 std::cout<<""<<std::endl;
             }
-            move = echiquier_->getDeplacement();
+            move = getDeplacement();
 
         }
 
@@ -61,10 +154,10 @@ void Game::playTurn(Color const & color) {
         deplacement = echiquier_->computeEat(move, eat);
         window_.setPieceHelp(deplacement);
     
-        move = echiquier_->getDeplacement();
+        move = getDeplacement();
         while(!echiquier_->checkEndEat(move,deplacement)) {
             std::cout<<RED<<"\n Impossible de deplacer ce pion a cet endroit :\n"<<RESET<<std::endl;
-            move = echiquier_->getDeplacement();
+            move = getDeplacement();
         }
 
         auto path = echiquier_->getPath(startCoord, move, eat);
@@ -77,7 +170,7 @@ void Game::playTurn(Color const & color) {
         while (choix != 'y') {
             // Selection coordonnee de depart
             window_.hideHelp();
-            move = echiquier_->getDeplacement();
+            move = getDeplacement();
             deplacement = echiquier_->getDeplacements(move);
             for (auto & d : deplacement)d.display();
             window_.setPieceHelp(deplacement);
@@ -94,7 +187,7 @@ void Game::playTurn(Color const & color) {
             std::cout<<RED<<"Deplacement impossible ! \n"<<RESET<<std::endl;
             window_.hideHelp();
             echiquier_->displayBoard();
-            auto start = echiquier_->getDeplacement();
+            auto start = getDeplacement();
             deplacement = echiquier_->getDeplacements(start);
             window_.setPieceHelp(deplacement);
             m = echiquier_->getMove(start);
@@ -121,13 +214,12 @@ void Game::playTurnCursor(Color const & color) {
 
 
     using namespace std::literals;
-    std::this_thread::sleep_for(3s);
+    std::this_thread::sleep_for(1s);
     //window_.update();
 
     MinMax test(*echiquier_, 3, color);
     //auto move = test.m_bestMove;
     //echiquier_->movePiece(move,color);
-    std::cout<<"test"<<std::endl;
     /*
     Coordinate start;
     std::vector<Coordinate> deplacement;
@@ -155,14 +247,20 @@ void Game::playTurnCursor(Color const & color) {
 void Game::launch() {
 
     // pions de test
-    echiquier_->newPiece(colorWhite, Coordinate(3.0,0.0), true);
+    //echiquier_->newPiece(colorWhite, Coordinate(3.0,0.0), true);
     //echiquier_->newPiece(colorBlack, Coordinate(3.0,1.0));
     //echiquier_->newPiece(colorBlack, Coordinate(3.0,3.0));
     //echiquier_->newPiece(colorBlack, Coordinate(4.0,1.0));
 
-    std::thread test(&Game::play,this);
-    window_.render();
-    test.join();
+
+    if(echiquier_->getSize() == 8) {
+        std::thread thread(&Game::play,this);
+        window_.render();
+        thread.join();
+
+    }
+
+    else play();
 }
 
 std::vector<std::tuple<Coordinate, Color> > Game::getCurrentState() {
@@ -172,15 +270,18 @@ std::vector<std::tuple<Coordinate, Color> > Game::getCurrentState() {
         state.push_back(std::make_tuple(p->getCoordinate(), p->getColor()));
     }
 
-    /*
-    for (auto & s : state) {
-        auto pos = std::get<0>(s);
-        Color c = std::get<1>(s);
-        pos.display();
-        std::cout<<c<<std::endl;
-        
-    }
-    */
-
     return state;
+}
+
+
+Coordinate Game::getDeplacement() {
+    std::size_t coordX;
+    std::cout<< "Ordonnee de la piece a deplacer : ";
+    std::cin>>coordX;
+
+    std::size_t coordY;
+    std::cout<< "Abscisse de la piece a deplacer : ";
+    std::cin>>coordY;
+
+    return Coordinate(coordX, coordY);
 }

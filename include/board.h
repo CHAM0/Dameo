@@ -90,7 +90,7 @@ class Board {
     // Permet de recuperer la direction d'un eat
     std::vector<std::tuple<int, int>> getAvailableDirections(Coordinate & coord,Color  color);
     std::vector<std::tuple<int, int>> getAvailableDirections2(Coordinate & coord);
-
+    bool gameOver(Color color);
     std::vector<std::vector<std::tuple<int, int>>> getLongerEat(Color const & color); 
     void recursivity(Coordinate & coord, int score, std::vector<std::tuple<int, int>> path, Color const & color, int & BestScore, std::vector<std::vector<std::tuple<int, int>>> & BestPath);
     bool checkStartEat(Coordinate const & coord, std::vector<std::vector<std::tuple<int, int>>> & path);
@@ -118,13 +118,11 @@ class Board {
         int x;
         if (color == colorWhite && move.finish_.getX() == 7){
             std::cout<<"King White"<<std::endl;
-            std::cin>>x;
             auto square = getSquare(move.finish_);
             square->piece->setKing();
         }
         else if (color == colorBlack && move.finish_.getX() == 0) {
             std::cout<<"King Black"<<std::endl;
-            std::cin>>x;
             auto square = getSquare(move.finish_);
             square->piece->setKing();
         }

@@ -534,7 +534,7 @@ std::vector<std::vector<std::tuple<int, int>>> Board::getLongerEat(Color const &
         path.clear();
     }
 
-    std::cout<<"BestEat : "<<BestScore<<std::endl;
+    //std::cout<<"BestEat : "<<BestScore<<std::endl;
     if (BestScore == 0) BestPath.clear();
     return BestPath;
 }
@@ -548,7 +548,7 @@ void Board::recursivity(Coordinate & coord, int score, std::vector<std::tuple<in
     if (currentPiece->getKing() == true) {
     // king
 
-    std::cout<<"king recursivity"<<std::endl;
+    //std::cout<<"king recursivity"<<std::endl;
 
         Color oppositeColor = colorWhite;
         if (color == colorWhite) oppositeColor = colorBlack;
@@ -732,4 +732,10 @@ std::vector<Move> Board::getAvailableMoves(const Color & color) {
     //for (auto m : moves) m.show();
 
     return moves;
+}
+
+bool Board::gameOver(Color color) {
+    auto pieces = getPieces(color);
+    if (pieces.size() == 0) return true ;
+    return false;
 }

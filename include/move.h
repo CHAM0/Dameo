@@ -22,8 +22,8 @@ struct Move {
     Move(Coordinate & start, Coordinate & finish): start_(start), finish_(finish) {};
     Move(Coordinate & start, Coordinate & finish, std::vector<std::tuple<int, int>> & path ): start_(start), finish_(finish), path_(path) {};
     void show() {
-        std::cout<<"("<<start_.getX()<<":"<<start_.getY()<<")";
-        std::cout<<" -> ("<<finish_.getX()<<":"<<finish_.getY()<<")"<<std::endl;
+        //std::cout<<"("<<start_.getX()<<":"<<start_.getY()<<")";
+        //std::cout<<" -> ("<<finish_.getX()<<":"<<finish_.getY()<<")"<<std::endl;
     };
     
 };

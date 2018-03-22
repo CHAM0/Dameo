@@ -21,7 +21,7 @@ class Game {
   public:
   
     Game();
-
+    void turn(std::string c1, std::string c2, std::string first);
     void play();
     void playTurn(Color const & color);
     void playTurnCursor(Color const & color);
@@ -29,4 +29,5 @@ class Game {
     std::vector<std::tuple<Coordinate, Color> > getCurrentState();
     Board& getEchiquier() {return *echiquier_;}
 
+    Coordinate getDeplacement();
 };
