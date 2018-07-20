@@ -529,7 +529,6 @@ std::vector<std::vector<std::tuple<int, int>>> Board::getLongerEat(Color const &
     for(auto & p : pieces) {
         auto coord = p->getCoordinate();
         path.push_back(std::make_tuple(static_cast<int>(coord.getX()), static_cast<int>(coord.getY())));
-        //recursivity king
         if (coord.isValid(size_)) recursivity(coord, score, path, color, BestScore, BestPath);
         path.clear();
     }
@@ -545,10 +544,8 @@ void Board::recursivity(Coordinate & coord, int score, std::vector<std::tuple<in
     auto availableDirections = getAvailableDirections(coord,color);
 
     auto currentPiece = getSquare(coord)->piece;
+    //king
     if (currentPiece->getKing() == true) {
-    // king
-
-    //std::cout<<"king recursivity"<<std::endl;
 
         Color oppositeColor = colorWhite;
         if (color == colorWhite) oppositeColor = colorBlack;
@@ -576,7 +573,7 @@ void Board::recursivity(Coordinate & coord, int score, std::vector<std::tuple<in
     }
 
     else {
-    // pas king
+    // not king
         for (auto & d : availableDirections) {
 
             bool king = getSquare(coord.add(std::get<0>(d),std::get<1>(d)))->piece->getKing();

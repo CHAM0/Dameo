@@ -1,8 +1,8 @@
 #include "../include/display2d.h"
 
-Display2D::Display2D(int nbCases): window_{sf::VideoMode(size_, size_), "Dameo" /*, sf::Style::None */}, scale_{nbCases} {
+Display2D::Display2D(int nbCases): window_{sf::VideoMode(800, 800), "Dameo" /*, sf::Style::None */}, scale_{nbCases} {
     // Création du plateau
-    int tableSize = size_ / scale_;
+    int tableSize = size_ / 8;
     for (int i=0; i<size_; ++i) {
         int offset = i%2;
         for (int j=0; j<size_; ++j) {
@@ -43,6 +43,7 @@ void Display2D::render() {
     }
 }                                         
 
+
 void Display2D::displayBoard() {
     
     for (auto & c : square) {
@@ -52,7 +53,7 @@ void Display2D::displayBoard() {
 
 void Display2D::displayPieces() {
     for (auto & e : state_) {
-        Piece2D piece(e,scale_);
+        Piece2D piece(e,scale_, inverseColor_);
         piece.displayPiece(scale_);
         pieces_.push_back(piece);
         window_.draw(piece.piece);
@@ -68,7 +69,7 @@ void Display2D::displayPieces() {
 void Display2D::displayHelp() {
     std::vector<Piece2D> pieces;
     for (auto & e : help_) {
-        Piece2D piece(e, scale_);
+        Piece2D piece(e, scale_, inverseColor_);
         //pieces.push_back(piece);
         piece.displayPiece(scale_);
         window_.draw(piece.piece);
@@ -90,7 +91,6 @@ void Display2D::update() {
     // met a jour la fenetre 
     window_.display();
 }
-
 
 void Display2D::updateHelp() {
     // nettoie l'ecran 

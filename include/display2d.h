@@ -15,18 +15,26 @@ class Display2D {
       float y;
       int scale_ ;
 
-      Piece2D(std::tuple<Coordinate, Color> p, int nbCases): scale_{nbCases},  piece(1200 / (nbCases * 2.5)) {
+      Piece2D(std::tuple<Coordinate, Color> p, int nbCases, bool inverse = false): scale_{nbCases},  piece(800 / (nbCases * 2.5)) {
         auto coord = std::get<0>(p);
     
         x = static_cast<float>(coord.getX());
         y = static_cast<float>(coord.getY());
-        if (std::get<1>(p) == 1) color = sf::Color::Red;
-        else color = sf::Color::Green;
+
+        if (inverse){
+            if (std::get<1>(p) == 1) color = sf::Color::Green;
+            else color = sf::Color::Red;
+        }
+        else {
+           if (std::get<1>(p) == 1) color = sf::Color::Red;
+            else color = sf::Color::Green;
       }
-      Piece2D(Coordinate coord, int nbCases): piece( 1200  / (nbCases * 2.5)) , scale_{nbCases} {
+      }
+      Piece2D(Coordinate coord, int nbCases, bool inverse = false): piece( 800  / (nbCases * 2.5)) , scale_{nbCases} {
         x = static_cast<float>(coord.getX());
         y = static_cast<float>(coord.getY());
-        color = sf::Color::Yellow;
+        if (inverse) color = sf::Color::Blue;
+        else color = sf::Color::Yellow;
       }        
 
 
@@ -34,13 +42,13 @@ class Display2D {
         piece.setFillColor(color);
         piece.setOutlineThickness(3);
         piece.setOutlineColor(sf::Color(160,160,160));
-        int rectSize = 1200 / size;
-        piece.setPosition(sf::Vector2f( ( rectSize * y + 15), ( rectSize * x + 15) ));
+        int rectSize = 800 / size;
+        piece.setPosition(sf::Vector2f( ( rectSize * y + 10), ( rectSize * x + 10) ));
       }
     };
 
     // Taille de la fenêtre 
-    std::size_t size_ {1200};
+    std::size_t size_ {800};
     // SFML window
     sf::RenderWindow window_;
     // Contient les coordonnées et la couleur des pièces
@@ -55,6 +63,7 @@ class Display2D {
     Coordinate mouse;
     // Liste des pieces de l'échiquier
     std::vector<Piece2D> pieces_;
+    
 
 
 
@@ -80,4 +89,6 @@ class Display2D {
     void update();
     void updateHelp();
 
+    //inverse la couleur des pions
+    bool inverseColor_ {false};
 };

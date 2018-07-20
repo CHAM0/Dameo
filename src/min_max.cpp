@@ -121,3 +121,80 @@ int MinMax::eval(Board & board,const Color & color) {
 
     return pieceJ1.size() - pieceJ2.size();
 }
+
+int MinMax::min(Board & board, int depth,const Color & color, int A, int B) {
+    auto colorinverse = colorNone;
+    if (color == colorWhite) colorinverse = colorBlack;
+    else colorinverse = colorWhite; 
+    
+    if (depth == 0) {
+        return eval(board,colorinverse);
+    }
+
+    auto deplacements = board.getAvailableMoves(color);
+    int minValue = 1000;
+
+    Board cpBoard(8);
+        //test copie echiquier
+        board.copy(cpBoard);
+
+    for (auto & d : deplacements) {
+
+        cpBoard.movePiece(d,color);          
+        //board.displayBoard();
+       
+        int value = max(cpBoard,depth - 1,colorinverse);
+
+        if (value > B){
+            return value;
+        }
+
+        A = max(cpBoard, depth -1, colorinverse, A, B);
+
+        board.copy(cpBoard);
+
+        //board.movePieceInverse(d,color);
+        //board.displayBoard();
+        //m_board = board;
+    }
+
+    return minValue;
+}
+    
+int MinMax::max(Board &  board, int depth,const Color & color, int A, int B) {
+    if (depth == 0) {
+        return eval(board,color);
+    }
+
+    auto deplacements = board.getAvailableMoves(color);
+    int maxValue = -1000;
+
+    //test copie echiquier
+    Board cpBoard(8);
+    board.copy(cpBoard);
+
+    for (auto & d : deplacements) {
+
+        cpBoard.movePiece(d,color);
+       // board.displayBoard();
+        
+        auto colorinverse = colorNone;
+        if (color == colorWhite) colorinverse = colorBlack;
+        else colorinverse = colorWhite;
+
+        int value = min(cpBoard,depth - 1,colorinverse);
+
+        if (value <  A){
+            return value;
+        }
+
+        B = min(cpBoard, depth -1, colorinverse, A, B);
+
+        board.copy(cpBoard);
+        //board.movePieceInverse(d,color);
+        //board.displayBoard();
+        //m_board = board;
+    }
+
+    return maxValue;
+}

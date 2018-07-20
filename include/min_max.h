@@ -23,6 +23,10 @@ class MinMax
     int eval(Board & board,const Color & color);
     int min(Board & board, int depth,const Color & color);
     int max(Board & board, int depth,const Color & color);
+
+    // Elagage Alpha Beta 
+    int min(Board & board, int depth,const Color & color, int A, int B);
+    int max(Board & board, int depth,const Color & color, int A, int B);
 };
 
 #endif

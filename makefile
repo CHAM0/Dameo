@@ -1,5 +1,5 @@
 CC =g++
-EXEC=bin/exec
+EXEC=dameo
 OBJ=obj/board.o obj/game.o obj/min_max.o  obj/display2d.o obj/main.o
 
 all: $(OBJ)
@@ -21,4 +21,4 @@ obj/board.o : src/board.cpp
 	$(CC) -c src/board.cpp -std=c++14 -o $@	
 
 clean:
-	rm -rf obj/board.o obj/game.o obj/min_max.o  obj/display2d.o obj/main.o bin/exec
+	rm -rf obj/board.o obj/game.o obj/min_max.o  obj/display2d.o obj/main.o dameo

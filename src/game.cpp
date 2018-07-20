@@ -6,6 +6,8 @@ Game::Game(): window_(8) {
 
     std::size_t size = 0;
     while(size % 8 != 0 || size == 0) {
+
+        std::cout<<"Pour affichage 2D selectionner taille 8 !"<<std::endl;
         std::cout<<"\nTaille de la grille : ";
         std::cin>>size;
     }
@@ -32,7 +34,7 @@ void Game::play() {
     }
 
     switch (choix){
-        case 1: std::cout<<"reprise partie"<<std::endl;
+        case 1: load();
         case 2: {
                 std::cout<<"J1 ou J2 commence ? : "<<std::endl;
                 std::string first;
@@ -125,7 +127,15 @@ void Game::playTurn(Color const & color) {
         std::cout<<"3- sortir du menu"<<std::endl;
 
         std::cout<<"choix : ";
-        std::cin>>menu;        
+        std::cin>>menu;
+
+        if (menu == '1') {
+             save();
+        }
+        if (menu == '2') {
+            if (window_.inverseColor_ == true) window_.inverseColor_ = false;
+            else window_.inverseColor_ = true;
+        }   
     }
 
     std::cout<<"\nTour du joueur "<<color<<"\n "<<std::endl;
@@ -284,4 +294,53 @@ Coordinate Game::getDeplacement() {
     std::cin>>coordY;
 
     return Coordinate(coordX, coordY);
+}
+
+void Game::save() {
+    
+    std::ofstream file("save.txt", std::ios::out | std::ios::trunc);
+
+    if (file) {
+        std::cout <<"Sauvegarde en cours"<< std::endl;
+
+        auto state = getCurrentState();
+        for (auto &s : state) {
+            auto coord = std::get<0>(s);
+            auto color = std::get<1>(s);
+            file << coord.getX() << '/' << coord.getY() << '/' << color << std::endl;                                                                  
+        }
+        file.close();
+        std::cout <<"Sauvegarde terminé"<< std::endl;
+    }
+
+    else std::cerr << "Sauvegarde echoué" << std::endl;
+
+
+}
+
+void Game::load() {
+    std::ifstream file("save.txt", std::ios::in);  // on ouvre
+            
+    std::cout <<"Recherche d'une sauvegarde"<< std::endl; 
+            if(file)
+            {
+                auto size = echiquier_->getSize();
+                delete echiquier_;
+                echiquier_ = new Board(size);
+                std::string line;
+                while(getline(file, line)) {
+                    std::cout << line << std::endl;  // on l'affiche
+                    std::string x(1,line[0]);
+                    std::string y(1,line[2]);
+                     Coordinate coord(std::stoi(x), std::stoi(y));
+                     if (line[4] == '1'){
+                         echiquier_->newPiece(colorWhite,coord);
+                     }
+                     else echiquier_->newPiece(colorBlack,coord);
+                }
+ 
+                file.close();
+                std::cerr << "Chargement effectué !" << std::endl;
+            }
+            else std::cerr << "Impossible de charger sauvegarde !" << std::endl;
 }

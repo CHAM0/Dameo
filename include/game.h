@@ -1,9 +1,11 @@
 #pragma once
 #include <thread>
+#include <string>
 #include "board.h"
 #include "display2d.h"
 #include "min_max.h"
 #include <chrono>
+#include <fstream>
 
 /*
  * 
@@ -26,6 +28,8 @@ class Game {
     void playTurn(Color const & color);
     void playTurnCursor(Color const & color);
     void launch();
+    void save();
+    void load();
     std::vector<std::tuple<Coordinate, Color> > getCurrentState();
     Board& getEchiquier() {return *echiquier_;}
 
